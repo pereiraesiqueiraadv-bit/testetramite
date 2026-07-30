@@ -7,34 +7,43 @@ export default function AuthCallbackPage() {
   const [status, setStatus] = useState("Autenticando...");
 
   useEffect(() => {
-    async function handleCallback() {
-      const supabase = createClient();
-      const url = new URL(window.location.href);
-      const code = url.searchParams.get("code");
+    const supabase = createClient();
 
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
-          window.location.href = "/onboarding";
-          return;
-        }
-        console.error("Erro ao trocar código:", error.message);
-      }
+    async function handleAuth() {
+      // O cliente Supabase detecta automaticamente os tokens na URL
+      // (hash fragment no fluxo implícito, ou code no PKCE)
+      const { data: { session }, error } = await supabase.auth.getSession();
 
-      // Tentar detectar sessão via hash (fluxo implícito)
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (session) {
         window.location.href = "/onboarding";
         return;
       }
 
-      setStatus("Erro na autenticação. Redirecionando...");
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
+      // Se não tem sessão ainda, escutar por mudanças
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          if (session) {
+            subscription.unsubscribe();
+            window.location.href = "/onboarding";
+          }
+        }
+      );
+
+      // Timeout de segurança
+      setTimeout(async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          window.location.href = "/onboarding";
+        } else {
+          setStatus("Erro na autenticação. Redirecionando...");
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 2000);
+        }
+      }, 5000);
     }
 
-    handleCallback();
+    handleAuth();
   }, []);
 
   return (
