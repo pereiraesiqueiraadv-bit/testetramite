@@ -1,25 +1,45 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
 
   const forwardedHost = request.headers.get("x-forwarded-host");
   const host = request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto") || "https";
-  const siteUrl =
+  const origin =
     process.env.NEXT_PUBLIC_SITE_URL ||
     (forwardedHost ? `${proto}://${forwardedHost}` : `${proto}://${host}`);
 
   if (code) {
-    const supabase = await createClient();
+    const redirectUrl = new URL("/onboarding", origin);
+    const response = NextResponse.redirect(redirectUrl);
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+
     if (!error) {
-      return NextResponse.redirect(`${siteUrl}/onboarding`);
+      return response;
     }
     console.error("Auth callback error:", error.message);
   }
 
-  return NextResponse.redirect(`${siteUrl}/login?error=auth`);
+  return NextResponse.redirect(new URL("/login?error=auth", origin));
 }
