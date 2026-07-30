@@ -13,6 +13,11 @@ export default function LoginPage() {
   const supabase = createClient();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "auth") {
+      setError("Erro na autenticação. Tente novamente.");
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         window.location.href = "/onboarding";
@@ -28,13 +33,15 @@ export default function LoginPage() {
     setError("");
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       });
       if (error) {
-        setError(error.message);
+        setError(`Erro ao criar conta: ${error.message}`);
+        setLoading(false);
+      } else if (data.user && !data.session) {
+        setError("Conta criada! Verifique seu e-mail para confirmar.");
         setLoading(false);
       } else {
         window.location.href = "/onboarding";
@@ -45,7 +52,7 @@ export default function LoginPage() {
         password,
       });
       if (error) {
-        setError("E-mail ou senha incorretos.");
+        setError(`Erro no login: ${error.message}`);
         setLoading(false);
       } else {
         window.location.href = "/onboarding";
@@ -55,12 +62,13 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setLoading(true);
+    setError("");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) {
-      setError(error.message);
+      setError(`Erro Google: ${error.message}`);
       setLoading(false);
     }
   }
