@@ -1,15 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function OnboardingPage() {
   const [nomeEscritorio, setNomeEscritorio] = useState("");
   const [nomeUsuario, setNomeUsuario] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const supabase = createClient();
+
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const { data: usuario } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
+
+      if (usuario) {
+        window.location.href = "/dashboard";
+        return;
+      }
+
+      setNomeUsuario(user.user_metadata?.full_name || user.user_metadata?.name || "");
+      setLoading(false);
+    }
+
+    checkUser();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +54,15 @@ export default function OnboardingPage() {
       return;
     }
 
-    window.location.href = "/";
+    window.location.href = "/dashboard";
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted">Carregando...</p>
+      </div>
+    );
   }
 
   return (
