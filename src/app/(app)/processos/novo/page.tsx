@@ -80,7 +80,7 @@ export default function NovoProcessoPage() {
   }
 
   const inputClasses =
-    "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent";
+    "w-full rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent";
   const labelClasses = "block text-sm font-medium mb-1.5";
 
   return (
@@ -89,11 +89,26 @@ export default function NovoProcessoPage() {
       <div>
         <Link
           href="/processos"
-          className="text-sm text-muted hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
         >
-          &larr; Voltar
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Voltar
         </Link>
-        <h1 className="font-heading text-2xl font-bold mt-2">Novo processo</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight mt-2">
+          Novo processo
+        </h1>
         <p className="text-muted text-sm mt-1">
           Preencha os dados do processo abaixo.
         </p>
@@ -102,18 +117,33 @@ export default function NovoProcessoPage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="rounded-xl border border-border bg-card p-8 space-y-6 max-w-2xl"
+        className="rounded-xl border border-border bg-card shadow-card p-8 space-y-6 max-w-2xl"
       >
         {erro && (
-          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {erro}
+          <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#DC2626"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 mt-0.5"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{erro}</span>
           </div>
         )}
 
         {/* Numero CNJ */}
         <div>
           <label htmlFor="numero_cnj" className={labelClasses}>
-            Número CNJ
+            Numero CNJ
           </label>
           <input
             id="numero_cnj"
@@ -150,13 +180,13 @@ export default function NovoProcessoPage() {
         {/* Juizo */}
         <div>
           <label htmlFor="juizo" className={labelClasses}>
-            Juízo
+            Juizo
           </label>
           <input
             id="juizo"
             name="juizo"
             type="text"
-            placeholder="Ex: 1ª Vara Cível de São Paulo"
+            placeholder="Ex: 1a Vara Civel de Sao Paulo"
             value={form.juizo}
             onChange={handleChange}
             className={inputClasses}
@@ -188,7 +218,7 @@ export default function NovoProcessoPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
             <label htmlFor="distribuido_em" className={labelClasses}>
-              Distribuído em
+              Distribuido em
             </label>
             <input
               id="distribuido_em"
@@ -221,7 +251,7 @@ export default function NovoProcessoPage() {
         {/* Chance de exito */}
         <div>
           <label htmlFor="chance_exito" className={labelClasses}>
-            Chance de êxito (%)
+            Chance de exito (%)
           </label>
           <input
             id="chance_exito"
@@ -241,9 +271,44 @@ export default function NovoProcessoPage() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Salvando..." : "Cadastrar processo"}
+            {loading ? (
+              <>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-spin"
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Salvando...
+              </>
+            ) : (
+              <>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                Cadastrar processo
+              </>
+            )}
           </button>
           <Link
             href="/processos"
