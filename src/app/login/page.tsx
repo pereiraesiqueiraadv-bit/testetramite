@@ -14,8 +14,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("error") === "auth") {
-      setError("Erro na autenticação. Tente novamente.");
+    const authError = params.get("error");
+    if (authError) {
+      setError(`Erro na autenticação: ${authError}`);
     }
 
     supabase.auth.getUser().then(({ data: { user } }) => {
