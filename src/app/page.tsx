@@ -1,8 +1,29 @@
-export default function Home() {
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: usuario } = await supabase
+      .from("usuarios")
+      .select("id")
+      .eq("auth_user_id", user.id)
+      .single();
+
+    if (usuario) {
+      redirect("/dashboard");
+    } else {
+      redirect("/onboarding");
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6">
       <div className="max-w-2xl w-full text-center space-y-8">
-        {/* Logo / Marca */}
         <div className="space-y-2">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/10 mb-4">
             <svg
@@ -30,7 +51,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Features */}
         <div className="grid grid-cols-2 gap-4 text-left sm:grid-cols-3">
           {[
             { icon: "👥", label: "Clientes" },
@@ -50,7 +70,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* CTA */}
         <div className="space-y-4 pt-4">
           <a
             href="/login"
@@ -63,7 +82,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Rodapé */}
         <footer className="pt-12 text-muted text-xs">
           © 2024 Trâmite. Todos os direitos reservados.
         </footer>

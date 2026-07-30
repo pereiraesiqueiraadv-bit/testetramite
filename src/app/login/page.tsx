@@ -36,7 +36,7 @@ export default function LoginPage() {
       if (error) {
         setError("E-mail ou senha incorretos.");
       } else {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }
     }
     setLoading(false);
