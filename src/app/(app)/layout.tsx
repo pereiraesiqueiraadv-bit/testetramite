@@ -19,7 +19,7 @@ export default async function AppLayout({
     .from("usuarios")
     .select("id, nome, papel, pode_financeiro, pode_config, escritorio_id")
     .eq("auth_user_id", user.id)
-    .single();
+    .maybeSingle();
 
   if (!usuario) {
     redirect("/onboarding");
@@ -27,7 +27,6 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen">
-      {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 border-r border-border bg-card p-6 flex flex-col">
         <div className="mb-8">
           <h1 className="font-heading text-xl font-bold">Trâmite</h1>
@@ -79,7 +78,6 @@ export default async function AppLayout({
         </div>
       </aside>
 
-      {/* Conteúdo principal */}
       <main className="ml-64 p-8">{children}</main>
     </div>
   );
