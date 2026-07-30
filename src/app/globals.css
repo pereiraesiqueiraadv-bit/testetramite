@@ -7,9 +7,17 @@
   --color-accent-light: #C4A95D;
   --color-accent-dark: #8A6E2F;
   --color-muted: #6B7B76;
-  --color-border: #D4D6D0;
+  --color-border: #E2E4DE;
   --color-card: #FFFFFF;
   --color-card-hover: #FAFBF9;
+  --color-sidebar: #122521;
+  --color-sidebar-hover: #1A3530;
+  --color-sidebar-active: #213F39;
+  --color-sidebar-muted: #7A9990;
+  --color-success: #16A34A;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --color-info: #2563EB;
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-bricolage);
@@ -20,4 +28,12 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.shadow-card {
+  box-shadow: 0 1px 3px 0 rgb(18 37 33 / 0.04), 0 1px 2px -1px rgb(18 37 33 / 0.04);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 4px 6px -1px rgb(18 37 33 / 0.06), 0 2px 4px -2px rgb(18 37 33 / 0.04);
 }

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Sidebar } from "./sidebar";
 
 export default async function AppLayout({
   children,
@@ -25,60 +26,23 @@ export default async function AppLayout({
     redirect("/onboarding");
   }
 
+  const { data: escritorio } = await supabase
+    .from("escritorios")
+    .select("nome")
+    .eq("id", usuario.escritorio_id)
+    .single();
+
   return (
-    <div className="min-h-screen">
-      <aside className="fixed left-0 top-0 h-full w-64 border-r border-border bg-card p-6 flex flex-col">
-        <div className="mb-8">
-          <h1 className="font-heading text-xl font-bold">Trâmite</h1>
+    <div className="min-h-screen flex">
+      <Sidebar
+        usuario={usuario}
+        nomeEscritorio={escritorio?.nome || "Meu Escritório"}
+      />
+      <main className="flex-1 ml-64">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          {children}
         </div>
-
-        <nav className="flex-1 space-y-1">
-          {[
-            { href: "/dashboard", label: "Dashboard", icon: "📊" },
-            { href: "/clientes", label: "Clientes", icon: "👥" },
-            { href: "/processos", label: "Processos", icon: "⚖️" },
-            { href: "/acordos", label: "Acordos", icon: "🤝" },
-            { href: "/agenda", label: "Agenda", icon: "📅" },
-            { href: "/audiencias", label: "Audiências", icon: "🏛️" },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-background"
-            >
-              <span>{item.icon}</span>
-              {item.label}
-            </a>
-          ))}
-
-          {usuario.pode_financeiro && (
-            <a
-              href="/financeiro"
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-background"
-            >
-              <span>💰</span>
-              Financeiro
-            </a>
-          )}
-
-          {usuario.pode_config && (
-            <a
-              href="/configuracoes"
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-background"
-            >
-              <span>⚙️</span>
-              Configurações
-            </a>
-          )}
-        </nav>
-
-        <div className="border-t border-border pt-4">
-          <p className="text-sm font-medium truncate">{usuario.nome}</p>
-          <p className="text-xs text-muted capitalize">{usuario.papel}</p>
-        </div>
-      </aside>
-
-      <main className="ml-64 p-8">{children}</main>
+      </main>
     </div>
   );
 }
