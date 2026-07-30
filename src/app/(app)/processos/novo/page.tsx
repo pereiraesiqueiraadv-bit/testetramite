@@ -71,7 +71,7 @@ export default function NovoProcessoPage() {
     const { error } = await supabase.from("processos").insert(payload);
 
     if (error) {
-      setErro("Erro ao cadastrar processo. Verifique os dados e tente novamente.");
+      setErro(error.message || "Erro ao cadastrar processo.");
       setLoading(false);
       return;
     }

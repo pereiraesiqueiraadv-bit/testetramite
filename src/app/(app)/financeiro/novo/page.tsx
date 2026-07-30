@@ -137,7 +137,7 @@ export default function NovoLancamentoPage() {
     });
 
     if (error) {
-      setErro("Erro ao salvar lancamento. Tente novamente.");
+      setErro(error.message || "Erro ao salvar lancamento.");
       setLoading(false);
       return;
     }

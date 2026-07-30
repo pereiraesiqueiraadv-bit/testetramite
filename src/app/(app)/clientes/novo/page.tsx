@@ -85,7 +85,7 @@ export default function NovoClientePage() {
     });
 
     if (error) {
-      setErro("Erro ao salvar cliente. Tente novamente.");
+      setErro(error.message || "Erro ao salvar cliente.");
       setSalvando(false);
       return;
     }
